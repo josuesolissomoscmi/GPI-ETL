@@ -1,6 +1,6 @@
 import logging
 import azure.functions as func
-from azure.storage.blob import BlockBlobService, PublicAccess
+from azure.storage.blob import BlobServiceClient, PublicAccess
 from io import BytesIO
 from io import StringIO
 import pandas as pd
@@ -42,7 +42,7 @@ sql_snp500 = "SELECT MAX(Date) FROM [ST].[YAHOOFIN_SNP_500]"
 
 def upload_azure(values, file_name):
     # Create the BlockBlockService that is used to call the Blob service for the storage account
-    block_blob_service = BlockBlobService(account_name='gpistore', account_key='zfKM5R0PuPwR0F+pPsgs5BW/AQjAxv5fwKojoP2W38II++qfT6e+axFrRAcTOmKi/8U0tyJbrB2A3XCd7W7o6A==')
+    block_blob_service = BlobServiceClient(account_url='https://gpistore.blob.core.windows.net', credential='zfKM5R0PuPwR0F+pPsgs5BW/AQjAxv5fwKojoP2W38II++qfT6e+axFrRAcTOmKi/8U0tyJbrB2A3XCd7W7o6A==')
 
     # Create a container called 'quickstartblobs'.
     container_name ='gpistore'
