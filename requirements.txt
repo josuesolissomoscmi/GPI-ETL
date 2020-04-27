@@ -8,6 +8,7 @@ azure-core==1.4.0
 azure-functions==1.2.0
 azure-multiapi-storage==0.2.4
 azure-nspkg==3.0.2
+azure-storage==0.33.0
 azure-storage-blob==12.3.0
 bcrypt==3.1.7
 beautifulsoup4==4.8.0
