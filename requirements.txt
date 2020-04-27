@@ -8,7 +8,6 @@ azure-core==1.4.0
 azure-functions==1.2.0
 azure-multiapi-storage==0.2.4
 azure-nspkg==3.0.2
-azure-storage==0.36.0
 azure-storage-blob==2.1.0
 azure-storage-common==2.1.0
 azure-storage-queue==12.1.1
