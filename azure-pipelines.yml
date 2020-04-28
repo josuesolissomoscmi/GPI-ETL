@@ -11,7 +11,7 @@ variables:
   azureSubscription: '0cbe4c29-6b1e-4a19-909b-92c8b1fe12db'
 
   # Function app name
-  functionAppName: 'fjsr-az-test'
+  functionAppName: 'fjsr-az-testv2'
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
