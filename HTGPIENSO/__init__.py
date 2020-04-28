@@ -1,3 +1,4 @@
+#fjsolis - TEST
 import logging
 import azure.functions as func
 from azure.storage.blob import BlockBlobService, PublicAccess
