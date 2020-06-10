@@ -569,7 +569,18 @@ def COMMODITIES_PRICE():
     for i in range(len(records)):
         commodity = records[i][0]
         last_date = records[i][1]
-        data_next_n_expirations = get_futures_prices_next_expirations(6,commodity,last_date)                
+
+        #@S Frijol de Soya (7 expiraciones)
+        soybeans_7exp = ["S"]
+        #@SM Harina de Soya y @BO Aceite de Soya (8 expiraciones)
+        soybeans_8exp = ["SM", "BO"]
+  
+        if commodity in soybeans_7exp:
+            data_next_n_expirations = get_futures_prices_next_expirations(7,commodity,last_date)  
+        elif commodity in soybeans_8exp:
+            data_next_n_expirations = get_futures_prices_next_expirations(8,commodity,last_date) 
+        else:
+            data_next_n_expirations = get_futures_prices_next_expirations(6,commodity,last_date)                
         data = data.append(data_next_n_expirations[headers])
     data['actualizacion'] = datetime.datetime.now()
     
@@ -699,11 +710,16 @@ def get_volatilidad_implicita_next_expirations(n_expirations, symbol, date):
             }
         )
         req = urllib.request.urlopen(url + '?%s' % params)
-        #print(req.geturl())
+        print(req.geturl())
         logging.info(req.geturl())
         content = req.read()
         df = pd.read_csv(StringIO(content.decode()), header=0)
-        df['ATM'] = df['Close'].apply(lambda x: round(x/100,1)*1000)
+        if symbol == 'SM':
+            df['ATM'] = df['Close'].apply(lambda x: round(x/100,1)*10000)
+        elif symbol == 'BO':
+            df['ATM'] = df['Close'].apply(lambda x: round(x/10,1)*10000)
+        else:    
+            df['ATM'] = df['Close'].apply(lambda x: round(x/100,1)*1000)
         atm_data = atm_data.append(df[['Date', 'TickerSymbol', 'Close', 'ATM']])
         calls_puts = []
         for index, row in atm_data.iterrows():
@@ -713,17 +729,31 @@ def get_volatilidad_implicita_next_expirations(n_expirations, symbol, date):
             day_calls_puts.append(row['Close'])
             day_calls_puts.append(row['ATM'])
             for j in range(saltos_call_put,0,-1):
-                salto_call = row['TickerSymbol'] + 'C' + str(int(row['ATM']+(100*j))) + '.IV'
+                if symbol == 'S':
+                    salto_call = row['TickerSymbol'] + 'C' + str(int(row['ATM']+(200*j))) + '.IV'
+                elif symbol == 'SM':
+                    salto_call = row['TickerSymbol'] + 'C' + str(int(row['ATM']+(1000*j))) + '.IV'
+                elif symbol == 'BO':
+                    salto_call = row['TickerSymbol'] + 'C' + str(int(row['ATM']+(500*j))) + '.IV'
+                else:
+                    salto_call = row['TickerSymbol'] + 'C' + str(int(row['ATM']+(100*j))) + '.IV'
                 day_calls_puts.append(salto_call)
             atm_call = row['TickerSymbol'] + 'C' + str(int(row['ATM'])) + '.IV'        
             day_calls_puts.append(atm_call)
             atm_put = row['TickerSymbol'] + 'P' + str(int(row['ATM'])) + '.IV'
             day_calls_puts.append(atm_put)
             for j in range(saltos_call_put):
-                salto_put = row['TickerSymbol'] + 'P' + str(int(row['ATM']-(100*(j+1)))) + '.IV'
+                if symbol == 'S':
+                    salto_put = row['TickerSymbol'] + 'P' + str(int(row['ATM']-(200*(j+1)))) + '.IV'
+                elif symbol == 'SM':
+                    salto_put = row['TickerSymbol'] + 'P' + str(int(row['ATM']-(1000*(j+1)))) + '.IV'
+                elif symbol == 'BO':
+                    salto_put = row['TickerSymbol'] + 'P' + str(int(row['ATM']-(500*(j+1)))) + '.IV'
+                else:
+                    salto_put = row['TickerSymbol'] + 'P' + str(int(row['ATM']-(100*(j+1)))) + '.IV'
                 day_calls_puts.append(salto_put)
             calls_puts.append(day_calls_puts)
-        #print(calls_puts)
+        print(calls_puts)
         iv_data = pd.DataFrame(columns=headers_iv_5n)
         for j in range(len(calls_puts)):
             time.sleep(2)
@@ -741,6 +771,7 @@ def get_volatilidad_implicita_next_expirations(n_expirations, symbol, date):
                 }
             )
             req = urllib.request.urlopen(url + '?%s' % params)
+            print(req.geturl())
             try:
                 content = req.read()
                 df = pd.read_csv(StringIO(content.decode()), header=0)

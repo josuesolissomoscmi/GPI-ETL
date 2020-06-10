@@ -8,7 +8,7 @@ trigger:
 
 variables:
   # Azure Resource Manager connection created during pipeline creation
-  azureSubscription: '0cbe4c29-6b1e-4a19-909b-92c8b1fe12db'
+  azureSubscription: 'f9830efe-2989-4860-b37d-3e8c516a12c0'
 
   # Function app name
   functionAppName: 'fjsr-az-testv2'
