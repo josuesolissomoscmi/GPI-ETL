@@ -577,11 +577,11 @@ def get_futures_prices_next_expirations(n_expirations, symbol, date):
 
 def COMMODITIES_PRICE(type):
     if type == 'CORN':
-        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('C')"
+        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) AS Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('C')"
     elif type == 'WHEAT':
-        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('W','KW','MW')"
+        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) AS Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('W','KW','MW')"
     elif type == 'SOYBEAN':
-        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('S','SM','BO')"
+        sql_prices = "SELECT * FROM (SELECT commodity, MAX(fecha) AS Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity) as t WHERE t.commodity IN ('S','SM','BO')"
 
     records = get_last_record_date(sql_prices)
     data = pd.DataFrame(columns=headers)
