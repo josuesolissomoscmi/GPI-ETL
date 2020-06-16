@@ -44,8 +44,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             respuesta = COMMODITIES_VI()
         if name == 'COMMODITIES_OI_VOLUME':
             respuesta = COMMODITIES_OI_VOLUME()
-        if name == 'COMMODITIES_VI_5N':
-            respuesta = COMMODITIES_VI_5N()            
+        #if name == 'COMMODITIES_VI_5N':
+        #    respuesta = COMMODITIES_VI_5N() 
+        if name == 'COMMODITIES_VI_5N_CORN':
+            respuesta = COMMODITIES_VI_5N('CORN')
+        if name == 'COMMODITIES_VI_5N_WHEAT':
+            respuesta = COMMODITIES_VI_5N('WHEAT')
+        if name == 'COMMODITIES_VI_5N_SOYBEAN':
+            respuesta = COMMODITIES_VI_5N('SOYBEAN')           
         return func.HttpResponse(respuesta)
     else:
         return func.HttpResponse(
@@ -822,8 +828,15 @@ def get_volatilidad_implicita_next_expirations(n_expirations, symbol, date):
             iv['Skew']=iv['call']-iv['put']
     return iv
 
-def COMMODITIES_VI_5N():    
+def COMMODITIES_VI_5N(type):    
     #date_today = datetime.date.today().strftime(date_format)
+    if type == 'CORN':
+        sql_iv_next = "SELECT * FROM (SELECT commodity, MAX([fecha]) as Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(SymbolATM)=5 OR LEN(SymbolATM)=7) THEN RIGHT(LEFT(SymbolATM, 2), 1) ELSE CASE WHEN (LEFT(SymbolATM,1)='@') THEN RIGHT(LEFT(SymbolATM, 3),2) ELSE LEFT(SymbolATM,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_VI_N5]) t GROUP BY commodity) as t WHERE t.commodity IN ('C')"
+    elif type == 'WHEAT':
+        sql_iv_next = "SELECT * FROM (SELECT commodity, MAX([fecha]) as Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(SymbolATM)=5 OR LEN(SymbolATM)=7) THEN RIGHT(LEFT(SymbolATM, 2), 1) ELSE CASE WHEN (LEFT(SymbolATM,1)='@') THEN RIGHT(LEFT(SymbolATM, 3),2) ELSE LEFT(SymbolATM,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_VI_N5]) t GROUP BY commodity) as t WHERE t.commodity IN ('W','KW','MW')"
+    elif type == 'SOYBEAN':
+        sql_iv_next = "SELECT * FROM (SELECT commodity, MAX([fecha]) as Fecha FROM(SELECT [Date] fecha, CASE WHEN (LEN(SymbolATM)=5 OR LEN(SymbolATM)=7) THEN RIGHT(LEFT(SymbolATM, 2), 1) ELSE CASE WHEN (LEFT(SymbolATM,1)='@') THEN RIGHT(LEFT(SymbolATM, 3),2) ELSE LEFT(SymbolATM,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_VI_N5]) t GROUP BY commodity) as t WHERE t.commodity IN ('S','SM','BO')"
+
     records = get_last_record_date(sql_iv_next)
     data = pd.DataFrame(columns=headers_iv_5n)
     for i in range(len(records)):
