@@ -8,8 +8,8 @@ import openpyxl as xl
 import xlrd
 import time
 import pandas as pd
+import numpy as np
 import pyodbc
-#import re
 from bs4 import BeautifulSoup
 import datetime
 
