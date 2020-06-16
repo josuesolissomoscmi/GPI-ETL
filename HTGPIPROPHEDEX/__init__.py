@@ -604,10 +604,16 @@ def COMMODITIES_PRICE(type):
     data['actualizacion'] = datetime.datetime.now()
     
     if data.empty:
-        r = 'False'
+        r = '{"Result":"False"}'
     else:
-        r = 'True'
-        data = data.replace('---','0')    
+        r = '{"Result":"True"}'
+        data = data.replace('---','0')   
+
+    #if data.empty:
+    #    r = 'False'
+    #else:
+    #    r = 'True'
+    #    data = data.replace('---','0')    
     
     upload_azure(data, 'COMMODITIES_PRICE')
     return r
