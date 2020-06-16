@@ -56,9 +56,9 @@ def upload_azure():
     entradas= html.find_all('tr', {'class' : 'release attributes row'})
     
     #FJSOLIS
-    texto = entradas[i].find('td',{'class' : 'attribute date_uploaded'}).text
-    link = entradas[i].find('td',{'class' : 'file_set'}).find('a',{'data-label' : re.compile(r'[A-Za-z]*[0-9]*\.xls$')}).attrs['href']
-    daterelease = entradas[i].find('td',{'class' : 'file_set'}).find('a',{'data-label' : re.compile(r'[A-Za-z]*[0-9]*\.xls$')}).attrs['data-release-date']
+    texto = entradas[0].find('td',{'class' : 'attribute date_uploaded'}).text
+    link = entradas[0].find('td',{'class' : 'file_set'}).find('a',{'data-label' : re.compile(r'[A-Za-z]*[0-9]*\.xls$')}).attrs['href']
+    daterelease = entradas[0].find('td',{'class' : 'file_set'}).find('a',{'data-label' : re.compile(r'[A-Za-z]*[0-9]*\.xls$')}).attrs['data-release-date']
     daterelease = daterelease[:10]
 
     #ORIGINAL
