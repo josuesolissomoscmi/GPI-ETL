@@ -69,7 +69,7 @@ def upload_azure():
     block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
     
     #Verificar si la ruta existe.
-    symbols = ['^GSPC','GC=F','BG','SI=F','^DJI']
+    symbols = ['^GSPC','GC=F','BG','SI=F','^DJI','GLEN.L','ADM']
 
     max_date = get_last_record_date(sql_yahoo)[0][0]
     start_date = datetime.datetime.combine(max_date, datetime.datetime.min.time()) + datetime.timedelta(days=1)
