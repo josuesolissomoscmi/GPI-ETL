@@ -35,7 +35,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
              status_code=400
         )
 
-sql_yahoo = "SELECT MAX(Date) FROM [ST_YAHOO].[HISTORICAL_MARKET]"
+sql_yahoo = "SELECT Symbol, MAX(Date) FROM [ST_YAHOO].[HISTORICAL_MARKET] GROUP BY Symbol"
 
 def get_data(symbol,start,end):
     base_url = 'https://query1.finance.yahoo.com/v7/finance/download/'
@@ -69,20 +69,23 @@ def upload_azure():
     block_blob_service.set_container_acl(container_name, public_access=PublicAccess.Container)
     
     #Verificar si la ruta existe.
-    symbols = ['^GSPC','GC=F','BG','SI=F','^DJI','GLEN.L','ADM']
+    #symbols = ['^GSPC','GC=F','BG','SI=F','^DJI','GLEN.L','ADM']
 
-    max_date = get_last_record_date(sql_yahoo)[0][0]
-    start_date = datetime.datetime.combine(max_date, datetime.datetime.min.time()) + datetime.timedelta(days=1)
-
-    date_now_timestamp = str(datetime.datetime.timestamp(start_date)).split('.')
-    start = date_now_timestamp[0]
-
-    date_now_timestamp = str(datetime.datetime.timestamp(datetime.datetime.now() - datetime.timedelta(days=1))).split('.')
-    end = date_now_timestamp[0]
-
+    records = get_last_record_date(sql_yahoo)
     data = pd.DataFrame()
 
-    for symbol in symbols:
+    for i in range(len(records)):
+        symbol = records[i][0]
+        max_date = records[i][1]
+
+        start_date = datetime.datetime.combine(max_date, datetime.datetime.min.time()) + datetime.timedelta(days=1)
+
+        date_now_timestamp = str(datetime.datetime.timestamp(start_date)).split('.')
+        start = date_now_timestamp[0]
+
+        date_now_timestamp = str(datetime.datetime.timestamp(datetime.datetime.now() - datetime.timedelta(days=1))).split('.')
+        end = date_now_timestamp[0]
+
         symbol_data = get_data(symbol,start,end)
         if(symbol_data.empty):
             continue
