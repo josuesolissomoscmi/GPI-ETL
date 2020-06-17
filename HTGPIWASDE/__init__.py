@@ -48,7 +48,7 @@ def upload_azure():
     #Verificar si el archivo ya existe en WASDE
     url = "https://usda.library.cornell.edu/concern/publications/3t945q76s?locale=en"      
     if exist_fileurl(url)==False:
-        return 'False'
+        return '{"Result":"False"}'
 
     #Obtenemos el ultimo archivo publicado por Wasde
     req = requests.get(url)
@@ -69,7 +69,7 @@ def upload_azure():
     
     #Verificamos si el daterealese del archivo ya fue cargado en SQL, si fue asi se termina la ejecucion
     if (exist_daterelease(daterelease)):
-        return 'False'
+        return '{"Result":"False"}'
     
     #Verificamos que el mes no exista, si existe lo eliminamos antes de cargar esta nueva version
     #Esto se hace porque pueden haber varias versiones en un mismo mes y solo necesitamos la ultima
@@ -89,7 +89,7 @@ def upload_azure():
     name = 'WASDE_STOCK_TO_USE.csv'
     file_download = extraer_datos(req_read,fname,daterelease)
     block_blob_service.create_blob_from_text(container_name,name,file_download)
-    return 'True'
+    return '{"Result":"True"}'
 
 def exist_daterelease(daterelease):
     server = 'grainpredictive.database.windows.net'

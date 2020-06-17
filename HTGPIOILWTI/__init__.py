@@ -52,7 +52,7 @@ def upload_azure(values, file_name):
     name = file_name+'.csv'
     values_csv = values.to_csv(header=True,index=False,encoding='utf-8-sig')
     block_blob_service.create_blob_from_text(container_name,name,values_csv)
-    return 'True'
+    return '{"Result":"True"}'
 
 def get_last_record_date(sql):
     server = 'grainpredictive.database.windows.net'
@@ -88,5 +88,5 @@ def oil_wti():
     data = parse_oil_wti_price(data)
     data['actualizacion'] = datetime.datetime.now()
     if(data.empty):
-        return "False"
+        return '{"Result":"False"}'
     return upload_azure(data, 'OIL_WTI')

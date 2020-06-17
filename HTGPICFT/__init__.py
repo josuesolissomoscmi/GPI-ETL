@@ -63,13 +63,13 @@ def upload_azure():
     #Se actualiza todos los martes
     url = 'https://www.cftc.gov/files/dea/history/com_disagg_xls_' + str(year) + '.zip'      
     if exist_fileurl(url)==False:
-        return 'False'
+        return '{"Result":"False"}'
     
     name = 'FONDOS_CFTC.csv'
     file_download = download_inmemory(url,year,date_last_load)
 
     block_blob_service.create_blob_from_text(container_name,name,file_download)
-    return 'True'     
+    return '{"Result":"True"}'   
 
 def get_last_record_date():
     server = 'grainpredictive.database.windows.net'

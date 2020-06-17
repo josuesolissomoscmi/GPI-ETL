@@ -79,11 +79,14 @@ def upload_azure():
         max_date = records[i][1]
 
         start_date = datetime.datetime.combine(max_date, datetime.datetime.min.time()) + datetime.timedelta(days=1)
+        end_date = datetime.datetime.now() - datetime.timedelta(days=1)
+        if (start_date.strftime("%Y-%m-%d") > end_date.strftime("%Y-%m-%d")):
+            continue
 
         date_now_timestamp = str(datetime.datetime.timestamp(start_date)).split('.')
         start = date_now_timestamp[0]
 
-        date_now_timestamp = str(datetime.datetime.timestamp(datetime.datetime.now() - datetime.timedelta(days=1))).split('.')
+        date_now_timestamp = str(datetime.datetime.timestamp(end_date)).split('.')
         end = date_now_timestamp[0]
 
         symbol_data = get_data(symbol,start,end)
