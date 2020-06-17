@@ -518,11 +518,13 @@ def COMMODITIES_PRICE_HISTORY_CF():
         values = get_close_values(commodity, last_date)
         data = data.append(values[headers])
     data['actualizacion'] = datetime.datetime.now()
+    
     if data.empty:
-        r = 'False'
+        r = '{"Result":"False"}'
     else:
-        r = 'True'
-        data = data.replace('---','0')  
+        r = '{"Result":"True"}'
+        data = data.replace('---','0') 
+
     upload_azure(data, 'COMMODITIES_PRICE_HISTORY_CF')
     return r    
     
@@ -537,10 +539,10 @@ def COMMODITIES_PRICE_HISTORY_CC():
     data['actualizacion'] = datetime.datetime.now()
     
     if data.empty:
-        r = 'False'
+        r = '{"Result":"False"}'
     else:
-        r = 'True'
-        data = data.replace('---','0')    
+        r = '{"Result":"True"}'
+        data = data.replace('---','0')  
     
     upload_azure(data, 'COMMODITIES_PRICE_HISTORY_CC')
     return r
