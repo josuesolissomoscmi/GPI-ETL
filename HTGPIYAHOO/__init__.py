@@ -96,14 +96,14 @@ def upload_azure():
             data = data.append(symbol_data)
 
     if(data.empty):
-        return 'False'
+        return '{"Result":"False"}'
 
     file_download = data.to_csv(header=True,index=False,encoding='utf-8-sig')        
     name = 'YAHOO_FINANCE.csv'
     
     # Carga del archivo completo de WASDE al azure blob storage
     block_blob_service.create_blob_from_text(container_name,name,file_download)
-    return 'True'
+    return '{"Result":"True"}'
 
 def get_last_record_date(sql):
     server = 'grainpredictive.database.windows.net'

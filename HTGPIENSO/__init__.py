@@ -53,7 +53,7 @@ def upload_azure():
     #Verificar si el archivo ya existe en WASDE
     url = 'https://www.cpc.ncep.noaa.gov/data/indices/wksst8110.for'      
     if exist_fileurl(url)==False:
-        return 'False'
+        return '{"Result":"False"}'
 
     #se elimina la informacion del mes actual en caso ya se haya cargado una vez
     enso_year = year = time.strftime("%Y")
@@ -63,7 +63,7 @@ def upload_azure():
     file_download = download_inmemory(url,enso_year)
 
     block_blob_service.create_blob_from_text(container_name,name,file_download)
-    return 'True'     
+    return '{"Result":"True"}'   
 
 def download_inmemory(url,enso_year):
     #Todos los miercoles se publica nueva informacion de enso
