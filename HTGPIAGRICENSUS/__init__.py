@@ -33,7 +33,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
 base_url_history = 'https://www.agricensus.com/feed/?format=CSV&historical'
 username = 'raguilar@mfgrains.com'
-password = 'Carlos'
+password = 'cmi_Alimentos1'
 sql_inflation = "select max(date) from [ST_AGRICEN].[AGRICENSUS_FOB]"
 
 def upload_azure(values, file_name):
