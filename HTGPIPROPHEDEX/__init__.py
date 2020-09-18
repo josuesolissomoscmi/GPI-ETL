@@ -32,6 +32,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             respuesta = COMMODITIES_PRICE_HISTORY_CF()
         if name == 'COMMODITIES_PRICE_HISTORY_CC':
             respuesta = COMMODITIES_PRICE_HISTORY_CC()
+        if name == 'COMMODITIES_PRICE_HISTORY_CA':
+            respuesta = COMMODITIES_PRICE_HISTORY_CA()
         #if name == 'COMMODITIES_PRICE':
         #    respuesta = COMMODITIES_PRICE()
         if name == 'COMMODITIES_PRICE_CORN':
@@ -76,6 +78,7 @@ date_format = '%m-%d-%Y'
 sql_prices = "SELECT commodity, MAX(fecha) FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE]) t GROUP BY commodity"
 sql_future = "SELECT commodity, MAX(fecha) FROM(SELECT [Date] fecha, CASE WHEN (LEN(TickerSymbol)=5 OR LEN(TickerSymbol)=7) THEN RIGHT(LEFT(TickerSymbol, 2), 1) ELSE CASE WHEN (LEFT(TickerSymbol,1)='@') THEN RIGHT(LEFT(TickerSymbol, 3),2) ELSE LEFT(TickerSymbol,3) END END commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE_HISTORY_CF]) t GROUP BY commodity"
 sql_continuo = "SELECT 	commodity, MAX(fecha) FROM(SELECT [Date] fecha,	REPLACE(LEFT(TickerSymbol, LEN(TickerSymbol)-2), '@', '') commodity FROM [ST_PROPHETX].[COMMODITIES_PRICE_HISTORY_CC] ) t GROUP BY commodity"
+sql_activo = "SELECT commodity, MAX(fecha) FROM(SELECT [FCT_DT] fecha, REPLACE(LEFT(TCKR_SYMBL_CD, LEN(TCKR_SYMBL_CD)-2), '@', '') commodity FROM [ST_PROPHETX].[CMMDTY_ACTV_CNTRCT_PRC_HSTRY_FCT] ) t WHERE commodity <> 'QCL' GROUP BY commodity"
 sql_dollar_index = "SELECT REPLACE(LEFT(TickerSymbol,3), '@', '') commodity, MAX([Date]) FROM [ST_PROPHETX].[COMMODITIES_DOLLAR] GROUP BY TickerSymbol"
 sql_ethanol_index = "SELECT REPLACE(LEFT(TickerSymbol,3), '@', '') commodity, MAX([Date]) FROM [ST_PROPHETX].[COMMODITIES_ETHANOL] GROUP BY TickerSymbol"
 sql_commodity_index = "SELECT REPLACE(LEFT(TickerSymbol,3), '@', '') commodity, MAX([Date]) FROM [ST_PROPHETX].[COMMODITIES_INDEX] GROUP BY TickerSymbol"
@@ -280,6 +283,31 @@ def get_close_values_continuo(commodity, last_date):
     symbol_range.append(start_date.strftime(date_format))
     symbol_range.append(end_date.strftime(date_format))
     symbol_range.append(commodity_query+"@C")
+    symbols_ranges.append(symbol_range)
+    #Se hace la consulta a la pagina, se pasa el rango de fecha y el commoditie, asi como el mercado como parametro
+    close_values = get_futures_prices(symbols_ranges, expiration_months_market_commodity[1])
+    return close_values
+
+def get_close_values_activo(commodity, last_date):
+    start_date = last_date + datetime.timedelta(days=1)
+    end_date = datetime.datetime.now() - datetime.timedelta(days=1)
+    #Si la fecha inicial es mayor a la fecha final no debe devolver datos
+    if (start_date.strftime("%Y-%m-%d") > end_date.strftime("%Y-%m-%d")):
+        futures_data = pd.DataFrame(columns=headers)
+        return futures_data    
+    print("Commodity: "+commodity)
+    print("From "+start_date.strftime("%Y-%m-%d")+" to "+end_date.strftime("%Y-%m-%d"))
+    commodity_query = commodity
+    if (commodity_query != 'QCL'):
+        commodity_query = '@'+commodity_query
+    #"expiration_months_market_commodities" Es un listado de donde se obtiene los meses de expiracion de contratos en funcion del commoditie que se pasa por parametro
+    expiration_months_market_commodity = expiration_months_market_commodities.get(commodity)
+    #Se forma el rango de fecha y comoditie que se quiere obtener, ejemplo: symbols_ranges = ['02-01-2020', '02-02-2020', '@W@C']
+    symbols_ranges = []
+    symbol_range = []
+    symbol_range.append(start_date.strftime(date_format))
+    symbol_range.append(end_date.strftime(date_format))
+    symbol_range.append(commodity_query+"@A")
     symbols_ranges.append(symbol_range)
     #Se hace la consulta a la pagina, se pasa el rango de fecha y el commoditie, asi como el mercado como parametro
     close_values = get_futures_prices(symbols_ranges, expiration_months_market_commodity[1])
@@ -547,6 +575,25 @@ def COMMODITIES_PRICE_HISTORY_CC():
         data = data.replace('---','0')  
     
     upload_azure(data, 'COMMODITIES_PRICE_HISTORY_CC')
+    return r
+
+def COMMODITIES_PRICE_HISTORY_CA():
+    records_activo = get_last_record_date(sql_activo)
+    data = pd.DataFrame(columns=headers)
+    for i in range(len(records_activo)):
+        commodity = records_activo[i][0]
+        last_date = records_activo[i][1]
+        values_continuo = get_close_values_activo(commodity, last_date)
+        data = data.append(values_continuo[headers])
+    data['actualizacion'] = datetime.datetime.now()
+    
+    if data.empty:
+        r = '{"Result":"False"}'
+    else:
+        r = '{"Result":"True"}'
+        data = data.replace('---','0')  
+    
+    upload_azure(data, 'COMMODITIES_PRICE_HISTORY_CA')
     return r
 
 def get_futures_prices_next_expirations(n_expirations, symbol, date):
