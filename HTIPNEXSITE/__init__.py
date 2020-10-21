@@ -139,8 +139,6 @@ def NEX_MAIN(lat, lon, coordinates):
     regex = r'(?:BUS |TRANSMETRO|TRANSURBANO|BUS STATION|AUTOBUSES|TERMINAL|ESTACION DE BUS|PARADA DE )'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARADA DE BUS'
 
-    REGEX = 'CHOCOLATE|CHOC\.|CHOC.*TE' = CHOCOLATE
-
     regex = r'(?:MANUALIDADES|LIBRERIA|PAPELERIA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'LIBRERIA'
 
