@@ -123,130 +123,129 @@ def NEX_MAIN(lat, lon, coordinates):
     output['poi_category'] = None
 
     regex = r'(?:BARBER|BEAUTY|BELLEZA|PELUQUER|NAILS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'BARBERÍA/BELLEZA'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'BARBERÍA/BELLEZA'
 
-regex = r'(?:IGLESIA|TEMPLO|PARROQUIA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'IGLESIA'
-regex = r'(?:church)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'IGLESIA'
-           
-regex = r'(?:HOSPITAL|IGSS|IGGS|CENTRO MEDICO|APROFAM|CENTRO DE SALUD|PUESTO DE SALUD|SANATORIO|HEALTH CENTER|EMERGENCIA|CIRUGIA|PEDIATRICO|SANATORIUM)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HOSPITAL'
-    
-regex = r'(?:CLINIC|MEDI|OPTIC|ODONTO|LABORATORIO|DR )'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CLINICA DE SALUD'
+    regex = r'(?:IGLESIA|TEMPLO|PARROQUIA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'IGLESIA'
+    regex = r'(?:church)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'IGLESIA'
+            
+    regex = r'(?:HOSPITAL|IGSS|IGGS|CENTRO MEDICO|APROFAM|CENTRO DE SALUD|PUESTO DE SALUD|SANATORIO|HEALTH CENTER|EMERGENCIA|CIRUGIA|PEDIATRICO|SANATORIUM)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HOSPITAL'
+        
+    regex = r'(?:CLINIC|MEDI|OPTIC|ODONTO|LABORATORIO|DR )'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CLINICA DE SALUD'
 
-regex = r'(?:BUS |TRANSMETRO|TRANSURBANO|BUS STATION|AUTOBUSES|TERMINAL|ESTACION DE BUS|PARADA DE )'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARADA DE BUS'
+    regex = r'(?:BUS |TRANSMETRO|TRANSURBANO|BUS STATION|AUTOBUSES|TERMINAL|ESTACION DE BUS|PARADA DE )'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARADA DE BUS'
 
-REGEX = 'CHOCOLATE|CHOC\.|CHOC.*TE' = CHOCOLATE
+    REGEX = 'CHOCOLATE|CHOC\.|CHOC.*TE' = CHOCOLATE
 
-regex = r'(?:MANUALIDADES|LIBRERIA|PAPELERIA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'LIBRERIA'
+    regex = r'(?:MANUALIDADES|LIBRERIA|PAPELERIA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'LIBRERIA'
 
-regex = r'(?:PARQUEO|ESTACIONAMIENTO)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARQUEO'
+    regex = r'(?:PARQUEO|ESTACIONAMIENTO)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARQUEO'
 
-regex = r'(?:USAC|UNIVERSIDAD|UMG|FACULTAD|UPANA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'UNIVERSIDAD'
+    regex = r'(?:USAC|UNIVERSIDAD|UMG|FACULTAD|UPANA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'UNIVERSIDAD'
 
-regex = r'(?:HOTEL|PENSION|HOSPEDAJE)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HOTEL'
+    regex = r'(?:HOTEL|PENSION|HOSPEDAJE)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HOTEL'
 
-regex = r'(?:GASOLINERA|GASOLINA|ESTACION DE SERVICIO)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'GASOLINERA'
+    regex = r'(?:GASOLINERA|GASOLINA|ESTACION DE SERVICIO)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'GASOLINERA'
 
-regex = r'(?:MINI MUNI|MINISTRY PUBLIC|MUNICIPALITY|SECRETARIA DE|MUNICIPALIDAD|JUZGADO|TRIBUNAL|INACIF|RENAP|MAYCOM|ORGANISMO JUDICIAL|MINISTERIO PUBLICO|MUNICIPALIDAD)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'OFICINAS GUBERNAMENTALES'
+    regex = r'(?:MINI MUNI|MINISTRY PUBLIC|MUNICIPALITY|SECRETARIA DE|MUNICIPALIDAD|JUZGADO|TRIBUNAL|INACIF|RENAP|MAYCOM|ORGANISMO JUDICIAL|MINISTERIO PUBLICO|MUNICIPALIDAD)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'OFICINAS GUBERNAMENTALES'
 
-regex = r'(?:POLICE|PNC|COMISARIA|POLICIA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ESTACION POLICIAL'
+    regex = r'(?:POLICE|PNC|COMISARIA|POLICIA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ESTACION POLICIAL'
 
-regex = '(?:ESTACION DE BOMBEROS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ESTACION DE BOMBEROS'
+    regex = '(?:ESTACION DE BOMBEROS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ESTACION DE BOMBEROS'
 
-regex = r'(?:SUPER 24|SUPER PUMA|CONVENIENCIA|GASO MARKET|TIENDAS? MASS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA DE CONVENIENCIA'
+    regex = r'(?:SUPER 24|SUPER PUMA|CONVENIENCIA|GASO MARKET|TIENDAS? MASS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA DE CONVENIENCIA'
 
-regex = r'(?:CARNICERIA|POLLERIA|CASA DEL POLLO)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'VENTA DE CARNES'
+    regex = r'(?:CARNICERIA|POLLERIA|CASA DEL POLLO)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'VENTA DE CARNES'
 
-regex = r'(?:BANK)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'BANCO'
+    regex = r'(?:BANK)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'BANCO'
 
-regex = r'(?:ATM)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'CAJERO'
+    regex = r'(?:ATM)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'CAJERO'
 
-regex = r'(?:PARQUE|CANCHA|ESTADIO|CAMPOS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARQUE'
+    regex = r'(?:PARQUE|CANCHA|ESTADIO|CAMPOS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PARQUE'
 
-regex = r'(?:COLEGIO|INSTITUTO|LICEO|SEMINARIO|CENTRO EDUCATIVO|ESCUELA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'COLEGIO'
+    regex = r'(?:COLEGIO|INSTITUTO|LICEO|SEMINARIO|CENTRO EDUCATIVO|ESCUELA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'COLEGIO'
 
-regex = r'(?:COLEGIO|ACADEMIA|ESCUELA)(?:BAILE|FUTBOL|MUSICA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ACADEMIA'
+    regex = r'(?:COLEGIO|ACADEMIA|ESCUELA)(?:BAILE|FUTBOL|MUSICA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ACADEMIA'
 
-regex = r'(?:ALMACENES TROPIGAS|AGENCIA% WAY|GALLO MAS GALLO|ELEKTRA|ELECKTRA|CURACAO|ALMACENES JAPON|LA CHAPINITA|TECNO FACIL|TIENDAS MAX|RADIOSHACK|INTELAF|ELECTRONICA PANAMERICANA|PANAMERICAN ELECTRONIC|ABM|EL DUENDE)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ALMACEN DE ELECTRODOMESTICOS'
+    regex = r'(?:ALMACENES TROPIGAS|AGENCIA% WAY|GALLO MAS GALLO|ELEKTRA|ELECKTRA|CURACAO|ALMACENES JAPON|LA CHAPINITA|TECNO FACIL|TIENDAS MAX|RADIOSHACK|INTELAF|ELECTRONICA PANAMERICANA|PANAMERICAN ELECTRONIC|ABM|EL DUENDE)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'ALMACEN DE ELECTRODOMESTICOS'
 
-regex = r'(?:POLLO CAMPERO|BURGER KING|MCDONALDS|PIZZA HUT|DOMINOS PIZZA|PAPA JOHNS|TACO BELL|HAMBURGUESAS BERLIN|HAMBURGUESAS DEL PUENTE|POLLO BUJO|LITTLE CAESARS|LITTLE CEASERS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CADENA QSR'
+    regex = r'(?:POLLO CAMPERO|BURGER KING|MCDONALDS|PIZZA HUT|DOMINOS PIZZA|PAPA JOHNS|TACO BELL|HAMBURGUESAS BERLIN|HAMBURGUESAS DEL PUENTE|POLLO BUJO|LITTLE CAESARS|LITTLE CEASERS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CADENA QSR'
 
-regex = r'(?:LOS GAUCHITOS|PINULITO|POLLOLANDIA|POLLO LANDIA|QUEDELY|GUATEBURGER|GUATE BURGER|POLLO GRANJERO|POLLO EXPRESS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CADENA QSR POPULAR'
+    regex = r'(?:LOS GAUCHITOS|PINULITO|POLLOLANDIA|POLLO LANDIA|QUEDELY|GUATEBURGER|GUATE BURGER|POLLO GRANJERO|POLLO EXPRESS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CADENA QSR POPULAR'
 
-regex = r'(?:ANTOJITOS|CAFETERIA|ASADOS|CHURRASCOS|HAMBURGUESAS|BURGER|PUPUSERIA|PUPUSAS|CARNITA|CEVICHE|SEVICHE|CHICHARRONE|TACO |SHUCO|HOT DOG|TAQUERIA|COMEDOR|ALMUERZOS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'RESTAURANTE POPULAR'
+    regex = r'(?:ANTOJITOS|CAFETERIA|ASADOS|CHURRASCOS|HAMBURGUESAS|BURGER|PUPUSERIA|PUPUSAS|CARNITA|CEVICHE|SEVICHE|CHICHARRONE|TACO |SHUCO|HOT DOG|TAQUERIA|COMEDOR|ALMUERZOS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'RESTAURANTE POPULAR'
 
-regex = r'(?:\bCAFE\b|EL CAFETALITO|BARISTA|STARBUCKS|COFFEE|COFFE|KAPE|PATSY|BAGEL|CAFFE|DUNKIN DONUTS|AMERICAN DOU)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'COFFEE SHOP'
+    regex = r'(?:\bCAFE\b|EL CAFETALITO|BARISTA|STARBUCKS|COFFEE|COFFE|KAPE|PATSY|BAGEL|CAFFE|DUNKIN DONUTS|AMERICAN DOU)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'COFFEE SHOP'
 
-regex = r'(?:LA NEVERIA|HELADERIA|HELADO|POPS)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HELADERIA'
+    regex = r'(?:LA NEVERIA|HELADERIA|HELADO|POPS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'HELADERIA'
 
-regex = r'(?:CANELLA|YAMAHA|MOTOS HONDA|MOTOS |MOTOCICLETAS|MASESA|TIENDA UMA|MOVESA|ITALIKA|HAOJUE|BAJAJ|SUZUKI)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA MOTOCICLETAS'
+    regex = r'(?:CANELLA|YAMAHA|MOTOS HONDA|MOTOS |MOTOCICLETAS|MASESA|TIENDA UMA|MOVESA|ITALIKA|HAOJUE|BAJAJ|SUZUKI)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA MOTOCICLETAS'
 
-regex = r'(?:AGENCIA TIGO|\bTIGO\b|\bCLARO\b|AGENCIA CLARO|MOVISTAR)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'AGENCIA TELEFONIA'
+    regex = r'(?:AGENCIA TIGO|\bTIGO\b|\bCLARO\b|AGENCIA CLARO|MOVISTAR)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'AGENCIA TELEFONIA'
 
-regex = r'(?:SUPERMERCADO|SUPER MERCADO|WALMART|DESPENSA FAMILIAR|LA TORRE|PAIZ|MAXI BODEGA|SUPER DEL BARRIO)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'SUPERMERCADO'
+    regex = r'(?:SUPERMERCADO|SUPER MERCADO|WALMART|DESPENSA FAMILIAR|LA TORRE|PAIZ|MAXI BODEGA|SUPER DEL BARRIO)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'SUPERMERCADO'
 
-regex = r'(?:TIENDA|ABARROTERIA|ABARROTES|DEPOSITO|MAYOREO)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA DE BARRIO'
+    regex = r'(?:TIENDA|ABARROTERIA|ABARROTES|DEPOSITO|MAYOREO)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TIENDA DE BARRIO'
 
-regex = r'(?:TORTILLERIA|TORTILLA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TORTILLERIA'
+    regex = r'(?:TORTILLERIA|TORTILLA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'TORTILLERIA'
 
-regex = r'(?:PANADERIA|PANIFICADORA|PASTELERIA)'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PANADERIA'
+    regex = r'(?:PANADERIA|PANIFICADORA|PASTELERIA)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'PANADERIA'
 
-regex = r'\b(?:CENTRO COMERCIAL|PLAZA|PASEO|CC|C\.C\.|C\. C\.|MALL|GRAN VIA|GRAN CENTRO|GALERIAS|MEGA CENTRO|METRO NORTE|PRADERA)\b'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CENTRO COMERCIAL'
+    regex = r'\b(?:CENTRO COMERCIAL|PLAZA|PASEO|CC|C\.C\.|C\. C\.|MALL|GRAN VIA|GRAN CENTRO|GALERIAS|MEGA CENTRO|METRO NORTE|PRADERA)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'CENTRO COMERCIAL'
 
-regex = r'\b(?:MOTO|FIGUEPARTES|AQUARONI|KARS|HUESERA|RESPUESTOS|TALLER DE |ACEITERA|MOTOCENTRO|AUTOS|LUBRI|LLANTA|BATERIAS|COPHER)\b'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'REPUESTOS VEHICULOS'
+    regex = r'\b(?:MOTO|FIGUEPARTES|AQUARONI|KARS|HUESERA|RESPUESTOS|TALLER DE |ACEITERA|MOTOCENTRO|AUTOS|LUBRI|LLANTA|BATERIAS|COPHER)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'REPUESTOS VEHICULOS'
 
-regex = r'\b(?:FERRE|CELASA|CONSTRUCC|FERRO)\b'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'FERRETERIA'
+    regex = r'\b(?:FERRE|CELASA|CONSTRUCC|FERRO)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'FERRETERIA'
 
-regex = r'\b(?:AGROVET|AGROPE|AGRICUL)\b'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'AGROPECUARIA'
+    regex = r'\b(?:AGROVET|AGROPE|AGRICUL)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'AGROPECUARIA'
 
-regex = r'(?:local_government_office)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'OFICINAS GUBERNAMENTALES'
+    regex = r'(?:local_government_office)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'OFICINAS GUBERNAMENTALES'
 
-regex = r'(?:clothing_store|department_store)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'ALMACEN'
+    regex = r'(?:clothing_store|department_store)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'ALMACEN'
 
-regex = r'(?:restaurant|meal_delivery)'
-output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'OTROS RESTAURANTE'
-regex = r'\b(?:RESTAURANT)\b'
-output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'OTROS RESTAURANTE'
+    regex = r'(?:restaurant|meal_delivery)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'CTGRY_NM'] = 'OTROS RESTAURANTE'
+    regex = r'\b(?:RESTAURANT)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['tmp_poi_name']], 'CTGRY_NM'] = 'OTROS RESTAURANTE'
 
-output.loc[[poi_category is None for poi_category in output['CTGRY_NM']], 'CTGRY_NM'] = 'OTROS SIN CLASIFICACION'
-
+    output.loc[[poi_category is None for poi_category in output['CTGRY_NM']], 'CTGRY_NM'] = 'OTROS SIN CLASIFICACION'
 
     output = output[['poi_name','poi_category', 'poi_lgt', 'poi_ltt', 'distance_mtrs']]
     output.drop_duplicates(subset=['poi_name', 'poi_ltt', 'poi_lgt'],inplace=True)
