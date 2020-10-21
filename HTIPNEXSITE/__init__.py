@@ -102,8 +102,7 @@ def NEX_MAIN(lat, lon, coordinates):
         output.loc[index, 'distance_mtrs'] = geodesic(coordinates, (row['poi_ltt'], row['poi_lgt'])).meters
 
     # DATA CLEANING
-    print(output)
-
+    #print(output)
     output['poi_lgt'] = round(output['poi_lgt'], 5)
     output['poi_ltt'] = round(output['poi_ltt'], 5)
 
@@ -127,7 +126,7 @@ def NEX_MAIN(lat, lon, coordinates):
 
     regex = r'(?:IGLESIA|TEMPLO|PARROQUIA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'IGLESIA'
-    regex = r'(?:church)'
+    regex = r'(?:CHURCH)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'IGLESIA'
             
     regex = r'(?:HOSPITAL|IGSS|IGGS|CENTRO MEDICO|APROFAM|CENTRO DE SALUD|PUESTO DE SALUD|SANATORIO|HEALTH CENTER|EMERGENCIA|CIRUGIA|PEDIATRICO|SANATORIUM)'
@@ -232,22 +231,24 @@ def NEX_MAIN(lat, lon, coordinates):
     regex = r'\b(?:AGROVET|AGROPE|AGRICUL)\b'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'AGROPECUARIA'
 
-    regex = r'(?:local_government_office)'
+    regex = r'(?:LOCAL_GOVERNMENT_OFFICE)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'OFICINAS GUBERNAMENTALES'
 
-    regex = r'(?:clothing_store|department_store)'
+    regex = r'(?:CLOTHING_STORE|DEPARTMENT_STORE)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'ALMACEN'
 
-    regex = r'(?:restaurant|meal_delivery)'
+    regex = r'(?:RESTAURANT|MEAL_DELIVERY)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'OTROS RESTAURANTE'
     regex = r'\b(?:RESTAURANT)\b'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'OTROS RESTAURANTE'
 
     output.loc[[poi_category is None for poi_category in output['poi_category']], 'poi_category'] = 'OTROS SIN CLASIFICACION'
 
-    output = output[['poi_name','poi_category', 'poi_lgt', 'poi_ltt', 'distance_mtrs']]
-    output.drop_duplicates(subset=['poi_name', 'poi_ltt', 'poi_lgt'],inplace=True)
 
+    # FINAL SETTING
+    output = output[['poi_name','poi_category', 'poi_lgt', 'poi_ltt', 'distance_mtrs']]
+    output.drop_duplicates(inplace=True)
+    #print(output[['poi_name','poi_category', 'poi_lgt', 'poi_ltt']].sort_values(by=['poi_name']))
 
     categories = ['BARBERIA BELLEZA', 'IGLESIA', 'HOSPITAL', 'CLINICA DE SALUD', 'PARADA DE BUS', 'LIBRERIA', 'PARQUEO', 'ESTADIO', 'UNIVERSIDAD', 'HOTEL', 'GASOLINERA', 'OFICINAS GUBERNAMENTALES', 'ESTACION POLICIAL', 'ESTACION DE BOMBEROS', 'TIENDA DE CONVENIENCIA', 'VENTA DE CARNES', 'BANCO', 'CAJERO', 'PARQUE', 'COLEGIO', 'ALMACEN DE ELECTRODOMESTICOS', 'CADENA QSR', 'CADENA QSR POPULAR', 'RESTAURANTE POPULAR', 'COFFEE SHOP', 'HELADERIA', 'AGENCIA TELEFONIA', 'SUPERMERCADO', 'MERCADO CANTONAL', 'FARMACIA', 'TIENDA DE BARRIO', 'TORTILLERIA', 'PANADERIA', 'CENTRO COMERCIAL', 'REPUESTOS VEHICULOS', 'FERRETERIA', 'AGROPECUARIA', 'OFICINAS GUBERNAMENTALES', 'ALMACEN', 'OTROS RESTAURANTE', 'OTROS RESTAURANTE', 'OTROS SIN CLASIFICACION']
 
