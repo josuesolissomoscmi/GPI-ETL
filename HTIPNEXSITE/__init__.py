@@ -16,6 +16,7 @@ import azure.functions as func
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
+    chain = req.params.get('chain')
     lat = req.params.get('lat')
     lon = req.params.get('lon')
 
@@ -30,7 +31,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     #        name = req_body.get('name')
 
     if coordinates:
-        response = NEX_MAIN(lat, lon, coordinates)
+        response = NEX_MAIN(lat, lon, coordinates,chain)
         return func.HttpResponse(response)
     else:
         return func.HttpResponse(
@@ -67,8 +68,11 @@ def find_places(lat, lon, category, pagetoken):
     pagetoken = res.get("next_page_token", None)
     return pagetoken
 
-def download_azure():
-    DEST_FILE = 'cdp_model.sav'
+def download_azure(chain):
+    if chain == 'Casa_Del_Pollo':
+        DEST_FILE = 'cdp_model.sav'
+    else:
+        DEST_FILE = 'pollolandia_model.sav'
     # Create the BlockBlockService that is used to call the Blob service for the storage account
     block_blob_service = BlockBlobService(account_name='gpistore', account_key='zfKM5R0PuPwR0F+pPsgs5BW/AQjAxv5fwKojoP2W38II++qfT6e+axFrRAcTOmKi/8U0tyJbrB2A3XCd7W7o6A==')
 
@@ -82,7 +86,7 @@ def download_azure():
 
     return stream
 
-def NEX_MAIN(lat, lon, coordinates):
+def NEX_MAIN(lat, lon, coordinates,chain):
     
     model_file = ''
     categories = ['atm', 'bank', 'bus_station', 'cafe', 'church', 'convenience_store', 'department_store', 'electronics_store', 'hospital', 'local_government_office', 'establishment', 'parking', 'police', 'restaurant', 'school', 'shopping_mall', 'store', 'university']
@@ -102,7 +106,6 @@ def NEX_MAIN(lat, lon, coordinates):
         output.loc[index, 'distance_mtrs'] = geodesic(coordinates, (row['poi_ltt'], row['poi_lgt'])).meters
 
     # DATA CLEANING
-    #print(output)
     output['poi_lgt'] = round(output['poi_lgt'], 5)
     output['poi_ltt'] = round(output['poi_ltt'], 5)
 
@@ -121,27 +124,35 @@ def NEX_MAIN(lat, lon, coordinates):
 
     output['poi_category'] = None
 
+    regex = r'(?:RESTAURANT|MEAL_DELIVERY)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'OTROS RESTAURANTE'
+    regex = r'\b(?:RESTAURANTE?)\b'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'OTROS RESTAURANTE'
+
+    regex = r'(?:CALZADO|ZAPATERIA|ALMACEN|COMERCIAL|LA BODEGONA|DISTRIBUIDORA)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_name']], 'poi_category'] = 'ALMACEN'
+    regex = r'(?:CLOTHING_STORE|DEPARTMENT_STORE)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'ALMACEN'
+
     regex = r'(?:BARBER|BEAUTY|BELLEZA|PELUQUER|NAILS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'BARBERÍA/BELLEZA'
 
-    regex = r'(?:IGLESIA|TEMPLO|PARROQUIA)'
+    regex = r'(?:IGLESIA|TEMPLO|PARROQUIA|ASAMBLEA DE DIOS|TESTIGOS?.+JEHOV)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'IGLESIA'
-    regex = r'(?:CHURCH)'
-    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'IGLESIA'
-            
+               
     regex = r'(?:HOSPITAL|IGSS|IGGS|CENTRO MEDICO|APROFAM|CENTRO DE SALUD|PUESTO DE SALUD|SANATORIO|HEALTH CENTER|EMERGENCIA|CIRUGIA|PEDIATRICO|SANATORIUM)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'HOSPITAL'
         
     regex = r'(?:CLINIC|MEDI|OPTIC|ODONTO|LABORATORIO|DR )'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'CLINICA DE SALUD'
 
-    regex = r'(?:BUS |TRANSMETRO|TRANSURBANO|BUS STATION|AUTOBUSES|TERMINAL|ESTACION DE BUS|PARADA DE )'
+    regex = r'(?:BUS |TRANSMETRO|TRANSURBANO|BUS STATION|AUTOBUSES|TERMINAL|ESTACION DE BUS|PARADA DE |BUSES|LITEGUA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'PARADA DE BUS'
 
     regex = r'(?:MANUALIDADES|LIBRERIA|PAPELERIA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'LIBRERIA'
 
-    regex = r'(?:PARQUEO|ESTACIONAMIENTO)'
+    regex = r'(?:PARQUEO|ESTACIONAMIENTO|PARKING)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'PARQUEO'
 
     regex = r'(?:USAC|UNIVERSIDAD|UMG|FACULTAD|UPANA)'
@@ -150,7 +161,7 @@ def NEX_MAIN(lat, lon, coordinates):
     regex = r'(?:HOTEL|PENSION|HOSPEDAJE)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'HOTEL'
 
-    regex = r'(?:GASOLINERA|GASOLINA|ESTACION DE SERVICIO)'
+    regex = r'(?:GASOLINERA|GASOLINA|ESTACION DE SERVICIO|\bGAS\b)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'GASOLINERA'
 
     regex = r'(?:MINI MUNI|MINISTRY PUBLIC|MUNICIPALITY|SECRETARIA DE|MUNICIPALIDAD|JUZGADO|TRIBUNAL|INACIF|RENAP|MAYCOM|ORGANISMO JUDICIAL|MINISTERIO PUBLICO|MUNICIPALIDAD)'
@@ -165,34 +176,41 @@ def NEX_MAIN(lat, lon, coordinates):
     regex = r'(?:SUPER 24|SUPER PUMA|CONVENIENCIA|GASO MARKET|TIENDAS? MASS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'TIENDA DE CONVENIENCIA'
 
+    regex = r'(?:SUPER 24|SUPER PUMA|CONVENIENCIA|GASO MARKET|TIENDAS? MASS)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'TIENDA DE CONVENIENCIA'
+
     regex = r'(?:CARNICERIA|POLLERIA|CASA DEL POLLO)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'VENTA DE CARNES'
 
+    regex = r'(?:BANRURAL|CREDOMATIC|AGROMERCANTIL|BANCO|\bBAC\b|\bBAM\b|BANTRAB|GYT|G&T|COOPERATIVA|WESTERN UNION)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_name']], 'poi_category'] = 'BANCO'
     regex = r'(?:BANK)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'BANCO'
 
+    regex = r'\b(?:ATM|CAJERO)\b'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_name']], 'poi_category'] = 'CAJERO'
     regex = r'(?:ATM)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'CAJERO'
 
     regex = r'(?:PARQUE|CANCHA|ESTADIO|CAMPOS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'PARQUE'
 
-    regex = r'(?:COLEGIO|INSTITUTO|LICEO|SEMINARIO|CENTRO EDUCATIVO|ESCUELA)'
+    regex = r'(?:COLEGIO|INSTITUTO|LICEO|SEMINARIO|CENTRO EDUCATIVO|ESCUELA|CENTRO DE ESTUDIOS|\bINEB|\bINTECAP)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'COLEGIO'
 
     regex = r'(?:COLEGIO|ACADEMIA|ESCUELA)(?:BAILE|FUTBOL|MUSICA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'ACADEMIA'
 
-    regex = r'(?:ALMACENES TROPIGAS|AGENCIA% WAY|GALLO MAS GALLO|ELEKTRA|ELECKTRA|CURACAO|ALMACENES JAPON|LA CHAPINITA|TECNO FACIL|TIENDAS MAX|RADIOSHACK|INTELAF|ELECTRONICA PANAMERICANA|PANAMERICAN ELECTRONIC|ABM|EL DUENDE)'
+    regex = r'(?:ALMACENES TROPIGAS|AGENCIAS? WAY|GALLO MAS GALLO|ELEKTRA|ELECKTRA|CURACAO|ALMACENES JAPON|LA CHAPINITA|TECNO FACIL|TIENDAS MAX|RADIOSHACK|INTELAF|ELECTRONICA PANAMERICANA|PANAMERICAN ELECTRONIC|ABM|EL DUENDE)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'ALMACEN DE ELECTRODOMESTICOS'
 
     regex = r'(?:POLLO CAMPERO|BURGER KING|MCDONALDS|PIZZA HUT|DOMINOS PIZZA|PAPA JOHNS|TACO BELL|HAMBURGUESAS BERLIN|HAMBURGUESAS DEL PUENTE|POLLO BUJO|LITTLE CAESARS|LITTLE CEASERS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'CADENA QSR'
 
-    regex = r'(?:LOS GAUCHITOS|PINULITO|POLLOLANDIA|POLLO LANDIA|QUEDELY|GUATEBURGER|GUATE BURGER|POLLO GRANJERO|POLLO EXPRESS)'
+    regex = r'(?:AL MACARONE|LOS GAUCHITOS|PINULITO|POLLOLANDIA|POLLO LANDIA|QUEDELY|GUATEBURGER|GUATE BURGER|POLLO GRANJERO|POLLO EXPRESS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'CADENA QSR POPULAR'
 
-    regex = r'(?:ANTOJITOS|CAFETERIA|ASADOS|CHURRASCOS|HAMBURGUESAS|BURGER|PUPUSERIA|PUPUSAS|CARNITA|CEVICHE|SEVICHE|CHICHARRONE|TACO |SHUCO|HOT DOG|TAQUERIA|COMEDOR|ALMUERZOS)'
+    regex = r'(?:ANTOJITOS|CAFETERIA|ASADOS|CHURRASCOS|HAMBURGUESAS|BURGER|PUPUSERIA|PUPUSAS|CARNITA|CEVICHE|SEVICHE|CHICHARRONE|TACOS? |SHUCO|HOT DOG|TAQUERIA|COMEDOR|ALMUERZOS|LICUADOS|CHURRASQU|CAFETERIA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'RESTAURANTE POPULAR'
 
     regex = r'(?:\bCAFE\b|EL CAFETALITO|BARISTA|STARBUCKS|COFFEE|COFFE|KAPE|PATSY|BAGEL|CAFFE|DUNKIN DONUTS|AMERICAN DOU)'
@@ -201,49 +219,49 @@ def NEX_MAIN(lat, lon, coordinates):
     regex = r'(?:LA NEVERIA|HELADERIA|HELADO|POPS)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'HELADERIA'
 
-    regex = r'(?:CANELLA|YAMAHA|MOTOS HONDA|MOTOS |MOTOCICLETAS|MASESA|TIENDA UMA|MOVESA|ITALIKA|HAOJUE|BAJAJ|SUZUKI)'
+    regex = r'(?:CANELLA|YAMAHA|HONDA|MOTOS |MOTOCICLETAS|MASESA|TIENDA UMA|MOVESA|ITALIKA|HAOJUE|BAJAJ|SUZUKI)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'TIENDA MOTOCICLETAS'
 
     regex = r'(?:AGENCIA TIGO|\bTIGO\b|\bCLARO\b|AGENCIA CLARO|MOVISTAR)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'AGENCIA TELEFONIA'
 
-    regex = r'(?:SUPERMERCADO|SUPER MERCADO|WALMART|DESPENSA FAMILIAR|LA TORRE|PAIZ|MAXI BODEGA|SUPER DEL BARRIO)'
+    regex = r'(?:SUPERMERCADO|SUPER MERCADO|WALMART|DESPENSA FAMILIAR|LA TORRE|PAIZ|MAXI BODEGA|SUPER DEL BARRIO|LA BARATA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'SUPERMERCADO'
 
-    regex = r'(?:TIENDA|ABARROTERIA|ABARROTES|DEPOSITO|MAYOREO)'
+    regex = r'(?:\bMERCADO )'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'MERCADO CANTONAL'
+
+    regex = r'(?:TIENDA|ABARROTERIA|ABARROTES|DEPOSITO|MAYOREO|TDA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'TIENDA DE BARRIO'
 
     regex = r'(?:TORTILLERIA|TORTILLA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'TORTILLERIA'
 
-    regex = r'(?:PANADERIA|PANIFICADORA|PASTELERIA)'
+    regex = r'(?:PANADERIA|PANIFICADORA|PASTELERIA|\bPAN |\bPASTELES)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'PANADERIA'
 
     regex = r'\b(?:CENTRO COMERCIAL|PLAZA|PASEO|CC|C\.C\.|C\. C\.|MALL|GRAN VIA|GRAN CENTRO|GALERIAS|MEGA CENTRO|METRO NORTE|PRADERA)\b'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'CENTRO COMERCIAL'
 
-    regex = r'\b(?:MOTO|FIGUEPARTES|AQUARONI|KARS|HUESERA|RESPUESTOS|TALLER DE |ACEITERA|MOTOCENTRO|AUTOS|LUBRI|LLANTA|BATERIAS|COPHER)\b'
+    regex = r'\b(?:TALLER|MOTO|MOTOPARTES|MOTOSERVICIOS|MOTOREPUESTOS|FIGUEPARTES|AQUARONI|KARS|HUESERA|REPUESTOS|AUTO\s?REPUESTOS|AUTO\s?PIEZAS|AUTO\s?PARTES|TALLER DE |ACEITERA|MOTOCENTRO|AUTOS|LUBRI|LLANTA|BATERIAS|COPHER)\b'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'REPUESTOS VEHICULOS'
 
-    regex = r'\b(?:FERRE|CELASA|CONSTRUCC|FERRO)\b'
+    regex = r'(?:FERRE|CELASA|CONSTRUCC|FERRO|FERETERIA)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'FERRETERIA'
 
-    regex = r'\b(?:AGROVET|AGROPE|AGRICUL)\b'
+    regex = r'(?:AGROVET|AGRO|AGRIC)'
     output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'AGROPECUARIA'
+
+    regex = r'(?:FARMACIA|CRUZ VERDE|PHARMACY|FARMAZUL)'
+    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'FARMACIA'
 
     regex = r'(?:LOCAL_GOVERNMENT_OFFICE)'
     output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'OFICINAS GUBERNAMENTALES'
 
-    regex = r'(?:CLOTHING_STORE|DEPARTMENT_STORE)'
-    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'ALMACEN'
-
-    regex = r'(?:RESTAURANT|MEAL_DELIVERY)'
-    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'OTROS RESTAURANTE'
-    regex = r'\b(?:RESTAURANT)\b'
-    output.loc[[re.search(regex, poi_name) is not None for poi_name in output['poi_name']], 'poi_category'] = 'OTROS RESTAURANTE'
+    regex = r'(?:CHURCH)'
+    output.loc[[re.search(regex, poi_type) is not None for poi_type in output['poi_type']], 'poi_category'] = 'IGLESIA'
 
     output.loc[[poi_category is None for poi_category in output['poi_category']], 'poi_category'] = 'OTROS SIN CLASIFICACION'
-
 
     # FINAL SETTING
     output = output[['poi_name','poi_category', 'poi_lgt', 'poi_ltt', 'distance_mtrs']]
@@ -253,7 +271,7 @@ def NEX_MAIN(lat, lon, coordinates):
     categories = ['BARBERIA BELLEZA', 'IGLESIA', 'HOSPITAL', 'CLINICA DE SALUD', 'PARADA DE BUS', 'LIBRERIA', 'PARQUEO', 'ESTADIO', 'UNIVERSIDAD', 'HOTEL', 'GASOLINERA', 'OFICINAS GUBERNAMENTALES', 'ESTACION POLICIAL', 'ESTACION DE BOMBEROS', 'TIENDA DE CONVENIENCIA', 'VENTA DE CARNES', 'BANCO', 'CAJERO', 'PARQUE', 'COLEGIO', 'ALMACEN DE ELECTRODOMESTICOS', 'CADENA QSR', 'CADENA QSR POPULAR', 'RESTAURANTE POPULAR', 'COFFEE SHOP', 'HELADERIA', 'AGENCIA TELEFONIA', 'SUPERMERCADO', 'MERCADO CANTONAL', 'FARMACIA', 'TIENDA DE BARRIO', 'TORTILLERIA', 'PANADERIA', 'CENTRO COMERCIAL', 'REPUESTOS VEHICULOS', 'FERRETERIA', 'AGROPECUARIA', 'OFICINAS GUBERNAMENTALES', 'ALMACEN', 'OTROS RESTAURANTE', 'OTROS RESTAURANTE', 'OTROS SIN CLASIFICACION']
 
     forecast_data = {}
-    forecast_data['GEO_POI_300M_CANT'] = len(output.index)
+    forecast_data['GEO_POI_300M_CANT'] = len(output[output['distance_mtrs']<=300].index)
     forecast_data['GEO_POI_100M_CANT'] = len(output[output['distance_mtrs']<=100].index)
 
     for category in categories:
@@ -289,7 +307,7 @@ def NEX_MAIN(lat, lon, coordinates):
 
     print(forecast_data)
 
-    model = download_azure()
+    model = download_azure(chain)
     
     rf = joblib.load(model)
 
