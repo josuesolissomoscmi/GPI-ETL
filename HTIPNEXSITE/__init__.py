@@ -60,7 +60,7 @@ def find_places(lat, lon, category, pagetoken):
         info = {}
         info['poi_id'] = result['place_id']
         info['poi_name'] = result["name"]
-        info['poi_type'] = category.upper()
+        info['poi_type'] = str(category).upper()
         info['poi_ltt'] = result["geometry"]["location"]["lat"]
         info['poi_lgt'] = result["geometry"]["location"]["lng"]
         print(info)
@@ -69,6 +69,7 @@ def find_places(lat, lon, category, pagetoken):
     return pagetoken
 
 def download_azure(chain):
+    DEST_FILE=''
     if chain == 'Casa_Del_Pollo':
         DEST_FILE = 'cdp_model.sav'
     else:
@@ -78,10 +79,11 @@ def download_azure(chain):
 
     # Create a container called 'quickstartblobs'.
     container_name ='cmia'
-    blob_name='cdp_model.sav'
+    #blob_name='cdp_model.sav'
+    print(DEST_FILE)
 
     stream = io.BytesIO()
-    block_blob_service.get_blob_to_stream(container_name,blob_name,stream=stream,max_connections=2)
+    block_blob_service.get_blob_to_stream(container_name,DEST_FILE,stream=stream,max_connections=2)
     #stream.close()
 
     return stream
@@ -109,8 +111,8 @@ def NEX_MAIN(lat, lon, coordinates,chain):
     output['poi_lgt'] = round(output['poi_lgt'], 5)
     output['poi_ltt'] = round(output['poi_ltt'], 5)
 
-    output['poi_name'] = [poi_name.upper() for poi_name in output['poi_name']]
-    output['poi_type'] = [poi_type.upper() for poi_type in output['poi_type']]
+    output['poi_name'] = [str(poi_name).upper() for poi_name in output['poi_name']]
+    output['poi_type'] = [str(poi_type).upper() for poi_type in output['poi_type']]
 
     output['poi_name'] = [re.sub('Á', 'A', poi_name) for poi_name in output['poi_name']]
     output['poi_name'] = [re.sub('É', 'E', poi_name) for poi_name in output['poi_name']]
