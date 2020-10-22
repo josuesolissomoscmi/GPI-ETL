@@ -91,7 +91,7 @@ def download_azure(chain):
 def NEX_MAIN(lat, lon, coordinates,chain):
     
     model_file = ''
-    categories = ['atm', 'bank', 'bus_station', 'cafe', 'church', 'convenience_store', 'department_store', 'electronics_store', 'hospital', 'local_government_office', 'establishment', 'parking', 'police', 'restaurant', 'school', 'shopping_mall', 'store', 'university']
+    categories = ['atm', 'bank', 'bus_station', 'cafe', 'church', 'convenience_store', 'department_store', 'electronics_store', 'hospital', 'local_government_office', 'parking', 'police', 'restaurant', 'school', 'shopping_mall', 'store', 'university']
     global output
     
     for category in categories:
