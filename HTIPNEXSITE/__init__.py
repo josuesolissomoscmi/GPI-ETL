@@ -375,6 +375,6 @@ def NEX_MAIN(lat, lon, coordinates,chain):
     return json.dumps(res)
 
 
-print(NEX_MAIN(14.4970899, -90.5900806, (14.4970899, -90.5900806), 'Casa_Del_Pollo'))
+#print(NEX_MAIN(14.4970899, -90.5900806, (14.4970899, -90.5900806), 'Casa_Del_Pollo'))
 
 #print(close_points('GUATEMALA', 'Casa_Del_Pollo', 14.4970899, -90.5900806))
