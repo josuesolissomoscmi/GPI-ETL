@@ -94,7 +94,7 @@ def close_points(CNTRY, CTGRY, LTT, LNG):
     database = 'IDN_DB'
     username = 'cmia_etl'
     password = '(Mi@.3Tl'   
-    driver= '{ODBC Driver 13 for SQL Server}'
+    driver= '{ODBC Driver 17 for SQL Server}'
     
     conn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) 
 
