@@ -16,6 +16,7 @@ import sys
 import joblib
 import numpy as np
 import geopy 
+import pyodbc 
 from sklearn.ensemble import RandomForestClassifier
 from geopy.distance import geodesic
 from azure.storage.blob import BlockBlobService, PublicAccess
@@ -85,6 +86,47 @@ def download_azure():
     #stream.close()
 
     return stream
+
+def close_points(CNTRY, CTGRY, LTT, LNG):
+    server = 'cmiazsrvml03.database.windows.net'
+    database = 'IDN_DB'
+    username = 'cmia_etl'
+    password = '(Mi@.3Tl'   
+    driver= '{ODBC Driver 17 for SQL Server}'
+    
+    conn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password) 
+
+    if CTGRY == 'Casa_Del_Pollo':
+        CTGRY = 'CASA DEL POLLO'
+    else:
+        CTGRY = 'POLLOLANDIA'
+    
+    query = """
+        SELECT 
+        	ROW_NUMBER() OVER (ORDER BY mdist ASC) as row_index
+        	, * 
+        FROM (
+        	SELECT TOP 3 
+        		POS_NM
+        		, round(mdist, 0) mdist
+        	FROM (
+        		SELECT *, geography::Point("""+str(LTT)+""","""+str(LNG)+""", 4326).STDistance(geography::Point(nex_geo.LTT , nex_geo.LGT, 4326)) as mdist
+        		FROM DIM.CMIA_IP_NEX_GEO_POINTS nex_geo
+        		WHERE 
+        		--CNTRY_NM = '"""+CNTRY+"""'
+        		CTGRY_NM = '"""+CTGRY+"""'
+        	) SQ
+        	ORDER BY mdist
+        ) CP"""
+    close_points = pd.read_sql(query, conn)
+    res = [] 
+    for index, row in close_points.iterrows():
+        row_res = {}
+        row_res['POS_RANK'] = row['row_index']
+        row_res['POS_NM'] = row['POS_NM']
+        row_res['POS_DIST'] = row['mdist']
+        res.append(row_res)
+    return(res)
 
 def NEX_MAIN(lat, lon):
     categories = ['atm','bank','bus_station','cafe','church','convenience_store','department_store','electronics_store','hospital','local_government_office','establishment','parking','police','restaurant','school','shopping_mall','store','university']
@@ -359,10 +401,12 @@ def NEX_MAIN(lat, lon):
 
     json_forecast = class_predict[0]
     json_pois = output.to_dict('records')
-
+    cp = close_points('HONDURAS', 'POLLOLANDIA', lat, lon)
+    
     res = {}
     res['forecast'] = json_forecast
     res['pois'] = json_pois
+    res['close_points'] = cp
 
     #print(json.dumps(res))
     return json.dumps(res)
