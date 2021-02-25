@@ -44,6 +44,7 @@ output = pd.DataFrame()
 
 def find_places(rst_cd, lat, lon, category, pagetoken):
     api_url_base = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?'
+    #Change apikey.
     api_key = 'AIzaSyBkWP2Oj91ITxAPfHUHWRM4x2XkIxqqvf8'
     
     global output
