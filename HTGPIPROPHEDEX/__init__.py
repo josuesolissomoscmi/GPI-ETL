@@ -226,7 +226,7 @@ def get_last_record_date(sql):
     server = 'grainpredictive.database.windows.net'
     database = 'gpi'
     username = 'gpi'
-    password = 'Cmi@2019$A'
+    password = 'm4St3r.UCG'
     driver= '{ODBC Driver 17 for SQL Server}'
     cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';PORT=1433;DATABASE='+database+';UID='+username+';PWD='+ password)
     cursor = cnxn.cursor()
